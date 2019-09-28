@@ -1,5 +1,7 @@
 (ns splashed.core-alpha
-  (:require [clj-http.client :as client]
+  (:require [camel-snake-kebab.core :as csk]
+            [clj-http.client :as client]
+            [camel-snake-kebab.extras :as cske]
             [clojure.data.json :as json]))
 
 ;; Configuration/bindings
@@ -15,11 +17,15 @@
 (defmulti req! :method)
 
 (defmethod req! :get
-  [{:keys [path base-url params]}]
+  [{:keys [path base-url params options]}]
   (-> (client/get (str (or base-url default-url) path) 
-                 {:query-params params
-                  :headers {"Authorization" "Client-ID YOUR_ACCESS_KEY"}})
-      (parse-resp)))   
+                  {:query-params (cske/transform-keys
+                                   csk/->snake_case_keyword
+                                   params)
+                   :headers {"Authorization" (->> options
+                                                  :access-key
+                                                  (str "Client-ID "))}})
+      (parse-resp)))
 
 ;; Authorization
 
@@ -35,9 +41,8 @@
 
 ;; Photos
 (defn photos
-  [{:keys [page per-page order-by] :as params}]
-  (req! {:method :get :path "photos" :params params})) 
- 
+  [{:keys [page per-page order-by] :as params} options]
+  (req! {:method :get :path "photos" :params params :options options})) 
 
 ;; Search
 
