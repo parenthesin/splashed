@@ -49,6 +49,17 @@
 ;; Collections
 
 ;; Stats
+(defn- stats
+  [sub-path options]
+  (req! {:method :get :path (str "stats/" sub-path) :options options}))
+
+(defn stats-total
+  [options]
+  (stats "total" options))
+
+(defn stats-month
+  [options]
+  (stats "month" options))
 
 ;; Tests
 
