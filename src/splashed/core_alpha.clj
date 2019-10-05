@@ -40,9 +40,33 @@
 ;; Users
 
 ;; Photos
-(defn photos
+(defn- photos
+  [sub-path params options]
+    (req! {:method :get :path (str "photos/" sub-path) :params params :options options}))
+
+(defn photos-list
   [{:keys [page per-page order-by] :as params} options]
-  (req! {:method :get :path "photos" :params params :options options})) 
+  (photos nil params options))
+
+(defn photos-curated
+  [{:keys [page per-page order-by] :as params} options]
+  (photos "curated" params options))
+
+(defn photos-by-id
+  [id options]
+  (photos id nil options))
+
+(defn photos-random
+  [{:keys [collections featured username query orientation count] :as params} options]
+  (photos "random" params options))
+
+(defn photos-statistics-by-id
+  [id {:keys [resolution quantity] :as params} options]
+  (photos (str id "/statistics") params options))
+
+(defn photos-download-by-id
+  [id options]
+  (photos (str id "/download") nil options))
 
 ;; Search
 (defn- search
