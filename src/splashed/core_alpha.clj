@@ -49,6 +49,10 @@
   [sub-path params options]
   (req! {:method :get :path (str "search/" sub-path) :params params :options options}))
 
+(defn search-photos
+  [{:keys [query page per-page collections orientation] :as params} options]
+  (search "photos" params options))
+
 (defn search-collections
   [{:keys [query page per-page] :as params} options]
   (search "collections" params options))
