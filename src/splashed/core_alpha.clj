@@ -45,6 +45,17 @@
   (req! {:method :get :path "photos" :params params :options options})) 
 
 ;; Search
+(defn- search
+  [sub-path params options]
+  (req! {:method :get :path (str "search/" sub-path) :params params :options options}))
+
+(defn search-collections
+  [{:keys [query page per-page] :as params} options]
+  (search "collections" params options))
+
+(defn search-users
+  [{:keys [query page per-page] :as params} options]
+  (search "users" params options))
 
 ;; Collections
 
