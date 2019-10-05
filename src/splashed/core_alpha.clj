@@ -38,6 +38,33 @@
          :client-id client-id}))
 
 ;; Users
+(defn- users
+  [sub-path username options]
+  (req! {:method :get :path (str "users/" username sub-path) :options options}))
+
+(defn users-profile
+  [username options]
+  (users nil username options))
+
+(defn users-portfolio
+  [username options]
+  (users "/portfolio" username options))
+
+(defn users-photos
+  [username options]
+  (users "/photos" username options))
+
+(defn users-likes
+  [username options]
+  (users "/likes" username options))
+
+(defn users-collections
+  [username options]
+  (users "/collections" username options))
+
+(defn users-statistics
+  [username options]
+  (users "/statistics" username options))
 
 ;; Photos
 (defn- photos
