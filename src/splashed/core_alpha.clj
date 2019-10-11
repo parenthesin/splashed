@@ -113,6 +113,33 @@
   (search "users" params options))
 
 ;; Collections
+(defn- collections
+  [sub-path params options]
+    (req! {:method :get :path (str "collections/" sub-path) :params params :options options}))
+
+(defn collections-list
+  [{:keys [page per-page] :as params} options]
+  (collections nil params options))
+
+(defn collections-featured
+  [{:keys [page per-page] :as params} options]
+  (collections "featured" params options))
+
+(defn collections-curated
+  [{:keys [page per-page] :as params} options]
+  (collections "curated" params options))
+
+(defn collections-by-id
+  [id options]
+  (collections id nil options))
+
+(defn collections-photos-by-id
+  [id options]
+  (collections (str id "/photos") nil options))
+
+(defn collections-related-by-id
+  [id options]
+  (collections (str id "/related") nil options))
 
 ;; Stats
 (defn- stats
