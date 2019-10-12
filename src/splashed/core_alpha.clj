@@ -10,6 +10,17 @@
 
 ;; Request fns
 
+(defn with-authentication
+  [bearer skip-auth options request]
+  (if skip-auth
+    request
+    (merge-with into request {:headers {"Authorization"
+                                        (if bearer
+                                          (str "Bearer " bearer)
+                                          (->> options
+                                               :access-key
+                                               (str "Client-ID ")))}})))
+
 (defn parse-resp
   [{:keys [headers status body]}]
   (json/read-str body :key-fn keyword))
@@ -17,25 +28,43 @@
 (defmulti req! :method)
 
 (defmethod req! :get
-  [{:keys [path base-url params options]}]
-  (-> (client/get (str (or base-url default-url) path) 
-                  {:query-params (cske/transform-keys
-                                   csk/->snake_case_keyword
-                                   params)
-                   :headers {"Authorization" (->> options
-                                                  :access-key
-                                                  (str "Client-ID "))}})
-      (parse-resp)))
+  [{:keys [path base-url params skip-auth bearer options]}]
+  (->>
+    {:query-params (cske/transform-keys
+                     csk/->snake_case_keyword
+                     params)}
+    (with-authentication bearer skip-auth options)
+    (client/get (str (or base-url default-url) path))
+    parse-resp))
+
+(defmethod req! :post
+  [{:keys [path base-url body skip-auth bearer options]}]
+  (->>
+    {:body (-> (cske/transform-keys
+                 csk/->snake_case_keyword
+                 body)
+               json/write-str)
+     :content-type :json}
+    (with-authentication bearer skip-auth options)
+    (client/post (str (or base-url default-url) path))
+    parse-resp))
 
 ;; Authorization
 
 ;; Oauth - authenticate a unsplash user
 (defn token
-  [client-id]
-  (req! {:method :post 
-         :base-url "https://unsplash.com/" 
+  [auth-code options]
+  (req! {:method :post
+         :base-url "https://unsplash.com/"
          :path "oauth/token"
-         :client-id client-id}))
+         :options options
+         :content-type :json
+         :body {:client-id (:client-id options)
+                :client-secret (:client-secret options)
+                :redirect-uri (:redirect-uri options)
+                :code auth-code
+                :grant-type "authorization_code"}
+         :skip-auth false}))
 
 ;; Users
 (defn- users
@@ -69,7 +98,7 @@
 ;; Photos
 (defn- photos
   [sub-path params options]
-    (req! {:method :get :path (str "photos/" sub-path) :params params :options options}))
+  (req! {:method :get :path (str "photos/" sub-path) :params params :options options}))
 
 (defn photos-list
   [{:keys [page per-page order-by] :as params} options]
