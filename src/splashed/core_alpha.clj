@@ -11,15 +11,13 @@
 ;; Request fns
 
 (defn with-authentication
-  [bearer skip-auth options request]
-  (if skip-auth
-    request
-    (merge-with into request {:headers {"Authorization"
-                                        (if bearer
-                                          (str "Bearer " bearer)
-                                          (->> options
-                                               :access-key
-                                               (str "Client-ID ")))}})))
+  [bearer options request]
+  (merge-with into request {:headers {"Authorization"
+                                      (if bearer
+                                        (str "Bearer " bearer)
+                                        (->> options
+                                             :access-key
+                                             (str "Client-ID ")))}}))
 
 (defn parse-resp
   [{:keys [headers status body]}]
@@ -33,7 +31,7 @@
     {:query-params (cske/transform-keys
                      csk/->snake_case_keyword
                      params)}
-    (with-authentication bearer skip-auth options)
+    (with-authentication bearer options)
     (client/get (str (or base-url default-url) path))
     parse-resp))
 
@@ -45,7 +43,7 @@
                  body)
                json/write-str)
      :content-type :json}
-    (with-authentication bearer skip-auth options)
+    (with-authentication bearer options)
     (client/post (str (or base-url default-url) path))
     parse-resp))
 
@@ -63,8 +61,7 @@
                 :client-secret (:client-secret options)
                 :redirect-uri (:redirect-uri options)
                 :code auth-code
-                :grant-type "authorization_code"}
-         :skip-auth false}))
+                :grant-type "authorization_code"}}))
 
 ;; Users
 (defn- users
