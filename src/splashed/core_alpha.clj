@@ -51,17 +51,13 @@
 
 ;; Oauth - authenticate a unsplash user
 (defn token
-  [auth-code options]
+  [payload options]
   (req! {:method :post
          :base-url "https://unsplash.com/"
          :path "oauth/token"
          :options options
          :content-type :json
-         :body {:client-id (:client-id options)
-                :client-secret (:client-secret options)
-                :redirect-uri (:redirect-uri options)
-                :code auth-code
-                :grant-type "authorization_code"}}))
+         :body payload}))
 
 ;; Users
 (defn- users
