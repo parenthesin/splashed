@@ -53,7 +53,6 @@
 (defn token
   [payload options]
   (req! {:method :post
-         :base-url "https://unsplash.com/"
          :path "oauth/token"
          :options options
          :content-type :json
