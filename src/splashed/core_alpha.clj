@@ -36,13 +36,13 @@
     parse-resp))
 
 (defmethod req! :post
-  [{:keys [path base-url body skip-auth bearer options]}]
+  [{:keys [path base-url body content-type bearer options]}]
   (->>
     {:body (-> (cske/transform-keys
                  csk/->snake_case_keyword
                  body)
                json/write-str)
-     :content-type :json}
+     :content-type content-type}
     (with-authentication bearer options)
     (client/post (str (or base-url default-url) path))
     parse-resp))
