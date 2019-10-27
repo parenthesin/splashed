@@ -10,6 +10,15 @@
 
 ;; Request fns
 
+(defn with-authentication
+  [bearer options request]
+  (merge-with into request {:headers {"Authorization"
+                                      (if bearer
+                                        (str "Bearer " bearer)
+                                        (->> options
+                                             :access-key
+                                             (str "Client-ID ")))}}))
+
 (defn parse-resp
   [{:keys [headers status body]}]
   (json/read-str body :key-fn keyword))
@@ -17,25 +26,37 @@
 (defmulti req! :method)
 
 (defmethod req! :get
-  [{:keys [path base-url params options]}]
-  (-> (client/get (str (or base-url default-url) path) 
-                  {:query-params (cske/transform-keys
-                                   csk/->snake_case_keyword
-                                   params)
-                   :headers {"Authorization" (->> options
-                                                  :access-key
-                                                  (str "Client-ID "))}})
-      (parse-resp)))
+  [{:keys [path base-url params skip-auth bearer options]}]
+  (->>
+    {:query-params (cske/transform-keys
+                     csk/->snake_case_keyword
+                     params)}
+    (with-authentication bearer options)
+    (client/get (str (or base-url default-url) path))
+    parse-resp))
+
+(defmethod req! :post
+  [{:keys [path base-url body content-type bearer options]}]
+  (->>
+    {:body (-> (cske/transform-keys
+                 csk/->snake_case_keyword
+                 body)
+               json/write-str)
+     :content-type content-type}
+    (with-authentication bearer options)
+    (client/post (str (or base-url default-url) path))
+    parse-resp))
 
 ;; Authorization
 
 ;; Oauth - authenticate a unsplash user
 (defn token
-  [client-id]
-  (req! {:method :post 
-         :base-url "https://unsplash.com/" 
+  [payload options]
+  (req! {:method :post
          :path "oauth/token"
-         :client-id client-id}))
+         :options options
+         :content-type :json
+         :body payload}))
 
 ;; Users
 (defn- users
@@ -69,7 +90,7 @@
 ;; Photos
 (defn- photos
   [sub-path params options]
-    (req! {:method :get :path (str "photos/" sub-path) :params params :options options}))
+  (req! {:method :get :path (str "photos/" sub-path) :params params :options options}))
 
 (defn photos-list
   [{:keys [page per-page order-by] :as params} options]
