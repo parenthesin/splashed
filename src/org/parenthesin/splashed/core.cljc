@@ -1,4 +1,4 @@
-(ns splashed.core-alpha
+(ns org.parenthesin.splashed.core
   (:require [camel-snake-kebab.core :as csk]
             [clj-http.client :as client]
             [camel-snake-kebab.extras :as cske]
@@ -178,8 +178,3 @@
 ;; Tests
 
 ;(photos {})
-
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
