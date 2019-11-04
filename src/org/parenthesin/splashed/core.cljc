@@ -96,10 +96,6 @@
   [{:keys [page per-page order-by] :as params} options]
   (photos nil params options))
 
-(defn photos-curated
-  [{:keys [page per-page order-by] :as params} options]
-  (photos "curated" params options))
-
 (defn photos-by-id
   [id options]
   (photos id nil options))
@@ -145,10 +141,6 @@
 (defn collections-featured
   [{:keys [page per-page] :as params} options]
   (collections "featured" params options))
-
-(defn collections-curated
-  [{:keys [page per-page] :as params} options]
-  (collections "curated" params options))
 
 (defn collections-by-id
   [id options]
