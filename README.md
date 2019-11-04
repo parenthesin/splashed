@@ -18,7 +18,7 @@ Add the following dependency to your project.clj file:
 
 ## Usage
 
-```
+```clojure
 (ns your.app.namespace.core
   (:require [org.parenthesin.splashed.core :as splashed]))
 
