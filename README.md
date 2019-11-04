@@ -6,11 +6,11 @@ Clojure wrapper for the [Unsplash API](https://unsplash.com/documentation)
 
 ## Setup
 
-First you need to create a unsplash developer account and register an application, you can check [here](https://unsplash.com/documentation#creating-a-developer-account) for more information.
+ - First you need to create a unsplash developer account and register an application, you can check [here](https://unsplash.com/documentation#creating-a-developer-account) for more information.
 
-After you created your application you can get your access key [here](https://unsplash.com/oauth/applications/).
+ - After you created your application you can get your access key [here](https://unsplash.com/oauth/applications/).
 
-Add the following dependency to your project.clj file:
+ - Add the following dependency to your project.clj file:
 
 ```
 [org.parenthesin/splashed "0.1.0"]
