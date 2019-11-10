@@ -2,6 +2,8 @@
 Clojure wrapper for the Unsplash API
 =======
 
+[![Clojars Project](https://img.shields.io/clojars/v/org.parenthesin/splashed.svg)](https://clojars.org/org.parenthesin/splashed)
+
 Clojure wrapper for the [Unsplash API](https://unsplash.com/documentation)
 
 ## Setup
